@@ -95,6 +95,25 @@ function logPrefix(): string {
 }
 
 // ============================================================================
+// THEME DETECTION - Discord applies theme-light/theme-dark class to <html>
+// CSS variables like --text-normal don't resolve reliably in plugin context.
+// ============================================================================
+
+function useDiscordTextColor(): string {
+    const getIsLight = () =>
+        document.documentElement.className.includes("theme-light") ||
+        document.body.className.includes("theme-light");
+    const [isLight, setIsLight] = React.useState(getIsLight);
+    React.useEffect(() => {
+        const observer = new MutationObserver(() => setIsLight(getIsLight()));
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
+        observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+        return () => observer.disconnect();
+    }, []);
+    return isLight ? "#313338" : "#dbdee1";
+}
+
+// ============================================================================
 // CONTEXT MENU - module-level cache of tracked user IDs so the patch function
 // (which is not a React component) can read it synchronously.
 // ============================================================================
@@ -164,6 +183,7 @@ function SentinelDashboard() {
 
     const { connected, recentEvents, cacheVersion } = useRealtime();
     const opsec = settings.store.opsecMode;
+    const textColor = useDiscordTextColor();
 
     React.useEffect(() => {
         refreshTrackedUsers();
@@ -203,7 +223,7 @@ function SentinelDashboard() {
     ];
 
     return (
-        <div style={{ padding: "16px", minHeight: "600px", position: "relative" as const }}>
+        <div style={{ padding: "16px", minHeight: "600px", position: "relative" as const, color: textColor }}>
             {/* OPSEC indicator - only visible inside the modal, never on external Discord UI */}
             {opsec && (
                 <div style={{
@@ -305,6 +325,7 @@ function SentinelPanel() {
     const opsec       = settings.store.opsecMode;
     const disguise    = settings.store.disguiseName || "Discord Utilities";
     const displayName = opsec ? disguise : "Sentinel";
+    const textColor   = useDiscordTextColor();
 
     const handleOpenDashboard = () => {
         const key = openModal((props: any) => (
@@ -324,7 +345,7 @@ function SentinelPanel() {
     };
 
     return (
-        <div style={{ padding: "4px 0" }}>
+        <div style={{ padding: "4px 0", color: textColor }}>
             <ConnectionStatus opsecMode={opsec} disguiseName={disguise} />
 
             {/* Stats row */}

@@ -50,7 +50,7 @@ export function CorrelationsView({ userId }: CorrelationsViewProps) {
                     ? C.positive
                     : lift >= 1.5
                     ? C.warning
-                    : C.offline;
+                    : "var(--text-muted)";
 
                 const delayMin = avgDelayMs / 60_000;
                 const delayLabel = delayMin < 1

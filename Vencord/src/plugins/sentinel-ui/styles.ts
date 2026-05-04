@@ -73,7 +73,7 @@ export const s = {
         cursor: "pointer",
         fontSize: "14px",
         fontWeight: active ? 600 : 400,
-        color: active ? "var(--text-normal)" : "var(--text-muted)",
+        color: active ? "var(--interactive-active)" : "var(--interactive-normal)",
         borderBottom: active ? "2px solid var(--brand-experiment)" : "2px solid transparent",
         marginBottom: "-2px",
         transition: "all 0.15s ease",
@@ -103,12 +103,11 @@ export const s = {
     statValue: {
         fontSize: "22px",
         fontWeight: 700,
-        color: "var(--text-normal)",
         lineHeight: "1.2",
     } as React.CSSProperties,
     statLabel: {
         fontSize: "11px",
-        color: "var(--text-muted)",
+        color: "var(--interactive-normal)",
         marginTop: "4px",
         textTransform: "uppercase" as const,
         letterSpacing: "0.5px",
@@ -136,7 +135,7 @@ export const s = {
     } as React.CSSProperties),
     timestamp: {
         fontSize: "11px",
-        color: "var(--text-muted)",
+        color: "var(--interactive-normal)",
     } as React.CSSProperties,
 
     // Avatar
@@ -171,7 +170,7 @@ export const s = {
 
     // Text
     muted: {
-        color: "var(--text-muted)",
+        color: "var(--interactive-normal)",
         fontSize: "12px",
     } as React.CSSProperties,
     small: {
@@ -183,13 +182,12 @@ export const s = {
     heading: {
         fontSize: "16px",
         fontWeight: 600,
-        color: "var(--header-primary)",
         marginBottom: "8px",
     } as React.CSSProperties,
     subheading: {
         fontSize: "13px",
         fontWeight: 600,
-        color: "var(--header-secondary)",
+        color: "var(--interactive-normal)",
         marginBottom: "6px",
         textTransform: "uppercase" as const,
         letterSpacing: "0.5px",
@@ -216,7 +214,7 @@ export const s = {
     empty: {
         textAlign: "center" as const,
         padding: "24px",
-        color: "var(--text-muted)",
+        color: "var(--interactive-normal)",
         fontSize: "14px",
     } as React.CSSProperties,
     error: {
@@ -228,14 +226,14 @@ export const s = {
     } as React.CSSProperties,
 };
 
-// Semantic color tokens — use these everywhere instead of hardcoded hex.
+// Semantic color tokens - use these everywhere instead of hardcoded hex.
 // They reference Discord's own CSS variables so they adapt to Light/Ash/Dark/Onyx.
 export const C = {
     // Status presence
     online:   "var(--status-positive)",
     idle:     "var(--status-warning)",
     dnd:      "var(--status-danger)",
-    offline:  "var(--interactive-muted)",
+    offline:  "var(--interactive-normal)",
 
     // Semantic feedback
     danger:   "var(--status-danger)",
@@ -326,9 +324,9 @@ export const EVENT_LABELS: Record<string, string> = {
 };
 
 export const STATUS_COLORS: Record<string, string> = {
-    online: "var(--status-positive)",
-    idle:   "var(--status-warning)",
-    dnd:    "var(--status-danger)",
-    offline:   "var(--interactive-muted)",
-    invisible: "var(--interactive-muted)",
+    online:    "var(--status-positive)",
+    idle:      "var(--status-warning)",
+    dnd:       "var(--status-danger)",
+    offline:   "var(--interactive-normal)",
+    invisible: "var(--interactive-normal)",
 };
