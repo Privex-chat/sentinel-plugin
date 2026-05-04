@@ -13,9 +13,10 @@ interface DashboardProps {
     connected: boolean;
     recentEvents: any[];
     cacheVersion: number;
+    opsecMode?: boolean;
 }
 
-export function Dashboard({ onSelectTarget, connected, recentEvents, cacheVersion }: DashboardProps) {
+export function Dashboard({ onSelectTarget, connected, recentEvents, cacheVersion, opsecMode = false }: DashboardProps) {
     const { data: targets, loading: targetsLoading, error: targetsError, refetch: refetchTargets } = useApi(
         () => api.getTargets(),
         [cacheVersion]
@@ -103,7 +104,10 @@ export function Dashboard({ onSelectTarget, connected, recentEvents, cacheVersio
                 <div style={s.row}>
                     <span style={s.statusDot(connected ? "#43b581" : "#f04747")} />
                     <span style={{ fontSize: "13px", color: "var(--text-normal)" }}>
-                        {connected ? "Live - Connected to Sentinel" : "Disconnected"}
+                        {connected
+                            ? (opsecMode ? "Live" : "Live - Connected to Sentinel")
+                            : "Disconnected"
+                        }
                     </span>
                 </div>
                 {status && (

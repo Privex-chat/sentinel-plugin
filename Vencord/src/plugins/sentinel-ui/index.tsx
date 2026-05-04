@@ -2,7 +2,7 @@ import { definePluginSettings } from "@api/Settings";
 import { addContextMenuPatch, NavContextMenuPatchCallback, removeContextMenuPatch } from "@api/ContextMenu";
 import definePlugin, { OptionType } from "@utils/types";
 import { React, Menu } from "@webpack/common";
-import { openModal, ModalRoot, ModalContent, ModalHeader, ModalCloseButton, ModalSize } from "@utils/modal";
+import { openModal, closeModal, ModalRoot, ModalContent, ModalHeader, ModalCloseButton, ModalSize } from "@utils/modal";
 
 import { api } from "./api/client";
 import { Dashboard } from "./components/Dashboard";
@@ -57,7 +57,42 @@ export const settings = definePluginSettings({
         description: "Show desktop notifications for alerts",
         default: true,
     },
+    opsecMode: {
+        type: OptionType.BOOLEAN,
+        description: "OPSEC Mode: hide all Sentinel traces from Discord UI. Removes right-click menu items, replaces all branding with a disguise name, and enables the panic key (Ctrl+Shift+.) to instantly close the dashboard.",
+        default: false,
+    },
+    disguiseName: {
+        type: OptionType.STRING,
+        description: "Name shown in place of 'Sentinel' when OPSEC Mode is active",
+        default: "Discord Utilities",
+    },
 });
+
+// ============================================================================
+// OPSEC - panic close and keyboard handler
+// ============================================================================
+
+let sentinelModalKey: string | null = null;
+
+function panicClose() {
+    if (sentinelModalKey !== null) {
+        closeModal(sentinelModalKey);
+        sentinelModalKey = null;
+    }
+}
+
+function handleGlobalKeyDown(e: KeyboardEvent) {
+    // Ctrl+Shift+. = panic close (close dashboard instantly)
+    if (e.ctrlKey && e.shiftKey && e.key === ".") {
+        panicClose();
+    }
+}
+
+// Log prefix - generic when OPSEC mode is active
+function logPrefix(): string {
+    return settings.store.opsecMode ? "[Plugin]" : "[Sentinel]";
+}
 
 // ============================================================================
 // CONTEXT MENU - module-level cache of tracked user IDs so the patch function
@@ -86,7 +121,7 @@ const userContextMenuPatch: NavContextMenuPatchCallback = (children, props) => {
                 <Menu.MenuItem
                     key="sentinel-untrack"
                     id="sentinel-untrack"
-                    label="Stop Tracking (Sentinel)"
+                    label="Stop Tracking"
                     color="danger"
                     action={async () => {
                         try {
@@ -94,7 +129,7 @@ const userContextMenuPatch: NavContextMenuPatchCallback = (children, props) => {
                             trackedUserIds.delete(userId);
                             api.clearCache();
                         } catch (e: any) {
-                            console.error("[Sentinel] removeTarget failed:", e.message);
+                            console.error(`${logPrefix()} removeTarget failed:`, e.message);
                         }
                     }}
                 />
@@ -103,14 +138,14 @@ const userContextMenuPatch: NavContextMenuPatchCallback = (children, props) => {
                 <Menu.MenuItem
                     key="sentinel-track"
                     id="sentinel-track"
-                    label="Track with Sentinel"
+                    label="Track User"
                     action={async () => {
                         try {
                             await api.addTarget(userId);
                             trackedUserIds.add(userId);
                             api.clearCache();
                         } catch (e: any) {
-                            console.error("[Sentinel] addTarget failed:", e.message);
+                            console.error(`${logPrefix()} addTarget failed:`, e.message);
                         }
                     }}
                 />
@@ -128,6 +163,7 @@ function SentinelDashboard() {
     const [targetTab, setTargetTab] = React.useState<TargetTab>("overview");
 
     const { connected, recentEvents, cacheVersion } = useRealtime();
+    const opsec = settings.store.opsecMode;
 
     React.useEffect(() => {
         refreshTrackedUsers();
@@ -161,14 +197,32 @@ function SentinelDashboard() {
         { id: "config",    label: "Config" },
     ];
 
-    // Top-level nav tabs
     const topTabs: { id: TabId; label: string }[] = [
         { id: "dashboard",     label: "Dashboard" },
         { id: "runtimeconfig", label: "Runtime Config" },
     ];
 
     return (
-        <div style={{ padding: "16px", minHeight: "600px" }}>
+        <div style={{ padding: "16px", minHeight: "600px", position: "relative" as const }}>
+            {/* OPSEC indicator - only visible inside the modal, never on external Discord UI */}
+            {opsec && (
+                <div style={{
+                    position: "absolute" as const,
+                    top: "0px",
+                    right: "0px",
+                    padding: "2px 8px",
+                    backgroundColor: "var(--background-modifier-accent)",
+                    borderRadius: "4px",
+                    fontSize: "9px",
+                    color: "var(--text-muted)",
+                    fontFamily: "monospace",
+                    letterSpacing: "1.5px",
+                    userSelect: "none" as const,
+                }}>
+                    OPSEC
+                </div>
+            )}
+
             {/* Top-level tabs - only visible when not inside a target view */}
             {tab !== "target" && (
                 <div style={{ ...s.tabBar, marginBottom: "16px" }}>
@@ -186,6 +240,7 @@ function SentinelDashboard() {
                     connected={connected}
                     recentEvents={recentEvents}
                     cacheVersion={cacheVersion}
+                    opsecMode={opsec}
                 />
             )}
 
@@ -242,18 +297,21 @@ function SentinelDashboard() {
 
 // ============================================================================
 // LAUNCHER - what shows in Settings -> Plugins -> SentinelUI -> Gear Icon
-// A minimal card that opens the full dashboard in a spacious modal window.
 // ============================================================================
 
 function SentinelPanel() {
     const { data: status } = useApi(() => api.getStatus(), []);
 
+    const opsec       = settings.store.opsecMode;
+    const disguise    = settings.store.disguiseName || "Discord Utilities";
+    const displayName = opsec ? disguise : "Sentinel";
+
     const handleOpenDashboard = () => {
-        openModal((props: any) => (
+        const key = openModal((props: any) => (
             <ModalRoot {...props} size={ModalSize.LARGE}>
                 <ModalHeader>
                     <span style={{ fontWeight: 700, fontSize: "16px", flex: 1 }}>
-                        Sentinel Dashboard
+                        {displayName}
                     </span>
                     <ModalCloseButton onClick={props.onClose} />
                 </ModalHeader>
@@ -262,13 +320,12 @@ function SentinelPanel() {
                 </ModalContent>
             </ModalRoot>
         ));
+        sentinelModalKey = key;
     };
-
-    const connected = !!status;
 
     return (
         <div style={{ padding: "4px 0" }}>
-            <ConnectionStatus />
+            <ConnectionStatus opsecMode={opsec} disguiseName={disguise} />
 
             {/* Stats row */}
             {status && (
@@ -293,23 +350,30 @@ function SentinelPanel() {
                     display: "block",
                     width: "100%",
                     padding: "12px 0",
-                    backgroundColor: "var(--brand-experiment)",
-                    color: "white",
+                    backgroundColor: opsec
+                        ? "var(--background-modifier-accent)"
+                        : "var(--brand-experiment)",
+                    color: opsec ? "var(--text-normal)" : "white",
                     borderRadius: "6px",
                     textAlign: "center" as const,
-                    fontWeight: 700,
+                    fontWeight: 600,
                     fontSize: "14px",
                     cursor: "pointer",
                     userSelect: "none" as const,
                     letterSpacing: "0.2px",
+                    border: opsec ? "1px solid var(--background-modifier-accent)" : "none",
                 }}
                 onClick={handleOpenDashboard}
             >
-                Open Sentinel Dashboard
+                {opsec ? `Open ${disguise}` : "Open Sentinel Dashboard"}
             </div>
 
+            {/* Footer hint */}
             <div style={{ ...s.muted, marginTop: "8px", textAlign: "center" as const, fontSize: "11px" }}>
-                Opens full dashboard in a large modal window - configure API URL &amp; token above
+                {opsec
+                    ? `OPSEC active - Ctrl+Shift+. closes the panel instantly`
+                    : "Opens full dashboard in a large modal window - configure API URL & token above"
+                }
             </div>
         </div>
     );
@@ -331,12 +395,23 @@ export default definePlugin({
     settings,
 
     start() {
-        addContextMenuPatch("user-context", userContextMenuPatch);
-        refreshTrackedUsers();
+        // Only add context menu items when OPSEC mode is off
+        if (!settings.store.opsecMode) {
+            addContextMenuPatch("user-context", userContextMenuPatch);
+            refreshTrackedUsers();
+        }
+        // Panic key always active
+        document.addEventListener("keydown", handleGlobalKeyDown);
     },
 
     stop() {
         removeContextMenuPatch("user-context", userContextMenuPatch);
+        document.removeEventListener("keydown", handleGlobalKeyDown);
+        // Close any open dashboard on plugin stop
+        if (sentinelModalKey !== null) {
+            closeModal(sentinelModalKey);
+            sentinelModalKey = null;
+        }
     },
 
     settingsAboutComponent: () => <SentinelPanel />,

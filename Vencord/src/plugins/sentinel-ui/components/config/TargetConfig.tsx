@@ -1,4 +1,4 @@
-import { React } from "@webpack/common";
+﻿import { React } from "@webpack/common";
 import { api } from "../../api/client";
 import { useApi } from "../../hooks/useApi";
 import { LoadingSpinner } from "../common/LoadingSpinner";
@@ -164,7 +164,7 @@ export function TargetConfigView({ userId }: TargetConfigProps) {
                 }}
                 onClick={saving ? undefined : handleSave}
             >
-                {saved ? "✓ Saved" : saving ? "Saving…" : "Save Configuration"}
+                {saved ? "Saved" : saving ? "Saving..." : "Save Configuration"}
             </span>
 
             {saveError && <div style={s.error}>{saveError}</div>}

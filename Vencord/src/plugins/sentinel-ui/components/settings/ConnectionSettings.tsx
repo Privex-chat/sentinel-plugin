@@ -2,7 +2,12 @@ import { React } from "@webpack/common";
 import { api } from "../../api/client";
 import { s } from "../../styles";
 
-export function ConnectionStatus() {
+interface ConnectionStatusProps {
+    opsecMode?: boolean;
+    disguiseName?: string;
+}
+
+export function ConnectionStatus({ opsecMode = false, disguiseName = "Discord Utilities" }: ConnectionStatusProps) {
     const [status, setStatus] = React.useState<any>(null);
     const [error, setError] = React.useState<string | null>(null);
 
@@ -22,12 +27,16 @@ export function ConnectionStatus() {
         return () => clearInterval(interval);
     }, []);
 
+    const connectedLabel = opsecMode ? "Service connected" : "Connected to Sentinel";
+    const failedLabel    = opsecMode ? "Service unavailable" : "Connection failed";
+    const checkingLabel  = "Checking...";
+
     return (
         <div style={s.topBar}>
             <div style={s.row}>
                 <span style={s.statusDot(status ? "#43b581" : "#f04747")} />
                 <span style={{ fontSize: "13px" }}>
-                    {status ? "Connected to Sentinel" : error ? "Connection failed" : "Checking..."}
+                    {status ? connectedLabel : error ? failedLabel : checkingLabel}
                 </span>
             </div>
             {status && (

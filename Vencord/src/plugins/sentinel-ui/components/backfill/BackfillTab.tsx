@@ -1,4 +1,4 @@
-import { React } from "@webpack/common";
+﻿import { React } from "@webpack/common";
 import { api } from "../../api/client";
 import { useApi } from "../../hooks/useApi";
 import { LoadingSpinner } from "../common/LoadingSpinner";
@@ -6,12 +6,12 @@ import { EmptyState } from "../common/EmptyState";
 import { s, C } from "../../styles";
 
 const STATUS_CFG: Record<string, { label: string; color: string; icon: string }> = {
-    completed:   { label: "Done",        color: C.positive, icon: "✓" },
-    failed:      { label: "Failed",      color: C.danger,   icon: "✗" },
-    in_progress: { label: "In Progress", color: C.warning,  icon: "⟳" },
-    pending:     { label: "Pending",     color: C.offline,  icon: "○" },
-    skipped:     { label: "Skipped",     color: C.offline,  icon: "–" },
-    paused:      { label: "Paused",      color: C.purple,   icon: "⏸" },
+    completed:   { label: "Done",        color: C.positive, icon: "OK" },
+    failed:      { label: "Failed",      color: C.danger,   icon: "X" },
+    in_progress: { label: "In Progress", color: C.warning,  icon: "~" },
+    pending:     { label: "Pending",     color: C.offline,  icon: "." },
+    skipped:     { label: "Skipped",     color: C.offline,  icon: "-" },
+    paused:      { label: "Paused",      color: C.purple,   icon: "||" },
 };
 
 function fmt(ts: number | null): string {
@@ -82,14 +82,14 @@ export function BackfillTab({ userId }: BackfillTabProps) {
             {/* Summary card */}
             <div style={{ ...s.card, borderLeft: "3px solid var(--brand-experiment)" }}>
                 <div style={{ ...s.row, justifyContent: "space-between", flexWrap: "wrap" as const, marginBottom: "12px", gap: "6px" }}>
-                    <span style={s.subheading}>⬇ Backfill Progress</span>
+                    <span style={s.subheading}>Backfill Progress</span>
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" as const }}>
                         {summary.failed > 0 && (
                             <span
                                 style={{ ...s.linkButton, padding: "4px 10px", backgroundColor: "rgba(240,71,71,0.15)", color: C.danger, borderRadius: "4px", fontSize: "11px", cursor: starting || customMode ? "default" : "pointer", opacity: starting || customMode ? 0.5 : 1 }}
                                 onClick={starting || customMode ? undefined : handleStart}
                             >
-                                ↺ Retry Failed
+                                Retry Failed
                             </span>
                         )}
                         <span
@@ -97,20 +97,20 @@ export function BackfillTab({ userId }: BackfillTabProps) {
                             onClick={starting || customMode ? undefined : () => handleCustom("new_channels")}
                             title="Re-fetch profile and add newly joined mutual servers"
                         >
-                            {customMode === "new_channels" ? "Scanning…" : "+ Scan New Servers"}
+                            {customMode === "new_channels" ? "Scanning..." : "+ Scan New Servers"}
                         </span>
                         <span
                             style={{ ...s.linkButton, padding: "4px 10px", backgroundColor: "rgba(240,71,71,0.15)", color: C.danger, borderRadius: "4px", fontSize: "11px", cursor: starting || customMode ? "default" : "pointer", opacity: starting || customMode ? 0.5 : 1 }}
                             onClick={starting || customMode ? undefined : () => handleCustom("full_reset")}
                             title="Reset all progress and re-scan every channel from scratch"
                         >
-                            {customMode === "full_reset" ? "Resetting…" : "⚠ Full Reset"}
+                            {customMode === "full_reset" ? "Resetting..." : "Full Reset"}
                         </span>
                         <span
                             style={{ ...s.linkButton, padding: "4px 10px", backgroundColor: starting ? "var(--background-modifier-accent)" : "var(--brand-experiment)", color: "white", borderRadius: "4px", fontSize: "11px", cursor: starting || customMode ? "default" : "pointer", opacity: starting || customMode ? 0.7 : 1 }}
                             onClick={starting || customMode ? undefined : handleStart}
                         >
-                            {starting ? "Starting…" : "▶ Start Backfill"}
+                            {starting ? "Starting..." : "Start Backfill"}
                         </span>
                     </div>
                 </div>
