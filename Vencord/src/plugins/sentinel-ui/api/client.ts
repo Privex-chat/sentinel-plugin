@@ -186,6 +186,60 @@ export const api = {
     exportData: (userId: string) =>
         request<any>(`/api/export/${userId}`),
 
+    // Daily briefs
+    getDailyBriefs: (userId: string, limit: number = 30) =>
+        request<any[]>(`/api/targets/${userId}/briefs?limit=${limit}`, {}, 30000),
+    generateBrief: (userId: string, date?: string) => {
+        const qs = date ? `?date=${date}` : "";
+        return request<any>(`/api/targets/${userId}/briefs/generate${qs}`, { method: "POST" });
+    },
+
+    // Backfill
+    getBackfillProgress: (userId: string) =>
+        request<any>(`/api/targets/${userId}/backfill/progress`, {}, 15000),
+    startBackfill: (userId: string) =>
+        request<any>(`/api/targets/${userId}/backfill/start`, { method: "POST" }),
+    resetBackfill: (userId: string, mode: "new_channels" | "full_reset") =>
+        request<any>(`/api/targets/${userId}/backfill/custom`, {
+            method: "POST",
+            body: JSON.stringify({ mode }),
+        }),
+
+    // Target config
+    getTargetConfig: (userId: string) =>
+        request<any>(`/api/targets/${userId}/config`, {}, 30000),
+    updateTargetConfig: (userId: string, cfg: Record<string, number>) =>
+        request<any>(`/api/targets/${userId}/config`, {
+            method: "PATCH",
+            body: JSON.stringify(cfg),
+        }),
+
+    // Correlations
+    getCorrelations: (userId: string, days: number = 30, windowHours: number = 0.5) =>
+        request<any[]>(
+            `/api/targets/${userId}/insights/correlations?days=${days}&window_hours=${windowHours}`,
+            {},
+            60000
+        ),
+
+    // Social relationships
+    getSocialRelationships: (userId: string, days: number = 30) =>
+        request<any>(`/api/targets/${userId}/social/relationships?days=${days}`, {}, 60000),
+
+    // Runtime config (hot-swap selfbot .env settings)
+    getRuntimeConfig: () =>
+        request<any>("/api/config", {}, 0),
+    updateRuntimeConfig: (key: string, value: string) =>
+        request<any>("/api/config", {
+            method: "PATCH",
+            body: JSON.stringify({ key, value }),
+        }),
+
     // Clear cache
     clearCache: () => cache.clear(),
+    clearCacheForTarget: (userId: string) => {
+        for (const key of cache.keys()) {
+            if (key.includes(userId)) cache.delete(key);
+        }
+    },
 };

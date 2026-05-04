@@ -66,7 +66,7 @@ export function Dashboard({ onSelectTarget, connected, recentEvents, cacheVersio
     const handleAddTarget = async () => {
         const uid = addUserId.trim();
         if (!/^\d{17,20}$/.test(uid)) {
-            setAddError("Invalid Discord user ID (must be 17–20 digits)");
+            setAddError("Invalid Discord user ID (must be 17-20 digits)");
             return;
         }
         setAddLoading(true);
@@ -103,7 +103,7 @@ export function Dashboard({ onSelectTarget, connected, recentEvents, cacheVersio
                 <div style={s.row}>
                     <span style={s.statusDot(connected ? "#43b581" : "#f04747")} />
                     <span style={{ fontSize: "13px", color: "var(--text-normal)" }}>
-                        {connected ? "Live — Connected to Sentinel" : "Disconnected"}
+                        {connected ? "Live - Connected to Sentinel" : "Disconnected"}
                     </span>
                 </div>
                 {status && (
@@ -143,7 +143,7 @@ export function Dashboard({ onSelectTarget, connected, recentEvents, cacheVersio
                     <div style={{ ...s.row, gap: "8px", marginBottom: "6px", flexWrap: "wrap" as const }}>
                         <input
                             type="text"
-                            placeholder="Discord User ID (17–20 digits)"
+                            placeholder="Discord User ID (17-20 digits)"
                             value={addUserId}
                             onChange={(e: any) => { setAddUserId(e.target.value); setAddError(null); }}
                             style={{
@@ -189,7 +189,7 @@ export function Dashboard({ onSelectTarget, connected, recentEvents, cacheVersio
                             }}
                             onClick={addLoading ? undefined : handleAddTarget}
                         >
-                            {addLoading ? "Adding…" : "Track"}
+                            {addLoading ? "Adding..." : "Track"}
                         </span>
                     </div>
                     {addError && (
@@ -234,10 +234,10 @@ export function Dashboard({ onSelectTarget, connected, recentEvents, cacheVersio
                             let detail = "";
                             try {
                                 const d = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-                                if (d.newStatus) detail = `${d.oldStatus || "?"} → ${d.newStatus}`;
+                                if (d.newStatus) detail = `${d.oldStatus || "?"} -> ${d.newStatus}`;
                                 else if (d.name) detail = d.name;
                                 else if (d.messageId) detail = `msg ${d.messageId?.slice(-6)}`;
-                                else if (d.song) detail = `${d.song} — ${d.artist}`;
+                                else if (d.song) detail = `${d.song} - ${d.artist}`;
                             } catch { }
 
                             return (

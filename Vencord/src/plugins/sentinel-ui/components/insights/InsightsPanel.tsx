@@ -2,20 +2,24 @@ import { React } from "@webpack/common";
 import { SleepScheduleView } from "./SleepSchedule";
 import { RoutineView } from "./RoutineView";
 import { AnomalyFeed } from "./AnomalyFeed";
+import { CorrelationsView } from "./CorrelationsView";
 import { s } from "../../styles";
 
 interface InsightsPanelProps {
     userId: string;
 }
 
-export function InsightsPanel({ userId }: InsightsPanelProps) {
-    const [subView, setSubView] = React.useState<"overview" | "sleep" | "routine" | "anomalies">("overview");
+type InsightsTab = "overview" | "sleep" | "routine" | "anomalies" | "correlations";
 
-    const tabs = [
-        { id: "overview" as const, label: "Overview" },
-        { id: "sleep" as const, label: "Sleep" },
-        { id: "routine" as const, label: "Routine" },
-        { id: "anomalies" as const, label: "Anomalies" },
+export function InsightsPanel({ userId }: InsightsPanelProps) {
+    const [subView, setSubView] = React.useState<InsightsTab>("overview");
+
+    const tabs: { id: InsightsTab; label: string }[] = [
+        { id: "overview",      label: "Overview" },
+        { id: "sleep",         label: "Sleep" },
+        { id: "routine",       label: "Routine" },
+        { id: "anomalies",     label: "Anomalies" },
+        { id: "correlations",  label: "Correlations" },
     ];
 
     return (
@@ -34,9 +38,10 @@ export function InsightsPanel({ userId }: InsightsPanelProps) {
                     <AnomalyFeed userId={userId} limit={5} />
                 </div>
             )}
-            {subView === "sleep" && <SleepScheduleView userId={userId} />}
-            {subView === "routine" && <RoutineView userId={userId} />}
-            {subView === "anomalies" && <AnomalyFeed userId={userId} />}
+            {subView === "sleep"        && <SleepScheduleView userId={userId} />}
+            {subView === "routine"      && <RoutineView userId={userId} />}
+            {subView === "anomalies"    && <AnomalyFeed userId={userId} />}
+            {subView === "correlations" && <CorrelationsView userId={userId} />}
         </div>
     );
 }

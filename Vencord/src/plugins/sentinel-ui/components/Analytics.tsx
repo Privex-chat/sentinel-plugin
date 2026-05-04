@@ -282,7 +282,7 @@ function MusicTab({ userId, refreshTrigger }: { userId: string; refreshTrigger: 
             <div style={s.grid3}>
                 <StatBox value={formatMs(data.totalListeningMs || 0)} label="Listen Time" color="#1db954" />
                 <StatBox value={data.sessionCount || 0} label="Sessions" />
-                <StatBox value={data.topArtists?.[0]?.name || "—"} label="Top Artist" />
+                <StatBox value={data.topArtists?.[0]?.name || "-"} label="Top Artist" />
             </div>
 
             {data.recentTrack && (
@@ -295,7 +295,7 @@ function MusicTab({ userId, refreshTrigger }: { userId: string; refreshTrigger: 
                     </div>
                     <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>
                         by {data.recentTrack.artist}
-                        {data.recentTrack.album ? ` — ${data.recentTrack.album}` : ""}
+                        {data.recentTrack.album ? ` - ${data.recentTrack.album}` : ""}
                     </div>
                 </div>
             )}
@@ -318,7 +318,7 @@ function MusicTab({ userId, refreshTrigger }: { userId: string; refreshTrigger: 
                     <div style={s.subheading}>Top Songs</div>
                     <BarChart
                         data={data.topSongs.slice(0, 10).map((s: any) => ({
-                            label: `${s.name} — ${s.artist}`,
+                            label: `${s.name} - ${s.artist}`,
                             value: s.listens,
                             color: "#1db954",
                         }))}

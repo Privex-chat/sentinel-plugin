@@ -243,11 +243,98 @@ export interface VoiceHabitsData {
 }
 
 // ============================================================================
+// New data types (briefs, backfill, config, correlations, runtime)
+// ============================================================================
+
+export interface DailyBrief {
+    id: number;
+    target_id: string;
+    date: string;
+    brief_text: string;
+    generated_at: number;
+}
+
+export interface BackfillChannelRow {
+    id: number;
+    target_id: string;
+    guild_id: string;
+    channel_id: string;
+    status: "pending" | "in_progress" | "completed" | "failed" | "skipped" | "paused";
+    messages_found: number;
+    oldest_message_id: string | null;
+    started_at: number | null;
+    completed_at: number | null;
+    error: string | null;
+}
+
+export interface BackfillProgress {
+    summary: {
+        total: number;
+        pending: number;
+        in_progress: number;
+        completed: number;
+        failed: number;
+        skipped: number;
+        paused: number;
+        totalMessagesFound: number;
+    };
+    channels: BackfillChannelRow[];
+}
+
+export interface TargetConfig {
+    target_id: string;
+    social_weight_messages: number;
+    social_weight_reactions: number;
+    social_weight_voice_hours: number;
+    social_weight_mentions: number;
+    anomaly_z_threshold: number;
+    updated_at?: number;
+}
+
+export interface EventCorrelation {
+    triggerType: string;
+    followType: string;
+    occurrences: number;
+    avgDelayMs: number;
+    lift: number;
+    confidence: number;
+}
+
+export type RuntimeKey =
+    | "DISCORD_TOKEN"
+    | "ALERT_WEBHOOK_URL"
+    | "CRITICAL_WEBHOOK_URL"
+    | "AI_PROVIDER"
+    | "AI_MODEL"
+    | "AI_API_KEY"
+    | "AI_BASE_URL"
+    | "AI_ANALYSIS_INTERVAL_MS"
+    | "AI_CATEGORIZATION_BATCH_SIZE"
+    | "SUPABASE_URL"
+    | "SUPABASE_SERVICE_KEY"
+    | "SUPABASE_SYNC_INTERVAL_MS"
+    | "BACKFILL_ENABLED"
+    | "BACKFILL_MAX_DAYS"
+    | "BACKFILL_MAX_MESSAGES_PER_CHANNEL"
+    | "ALERT_DIGEST_MODE"
+    | "ALERT_DIGEST_INTERVAL_MS"
+    | "ALERT_FATIGUE_THRESHOLD"
+    | "BRIEF_GENERATION_TIME"
+    | "PROFILE_POLL_INTERVAL_MS"
+    | "STATUS_POLL_INTERVAL_MS"
+    | "DAILY_SUMMARY_INTERVAL_MS";
+
+export type RuntimeConfig = Record<RuntimeKey, string>;
+
+// ============================================================================
 // UI Types
 // ============================================================================
 
-export type TabId = "dashboard" | "target";
-export type TargetTab = "overview" | "timeline" | "analytics" | "profile" | "insights" | "messages" | "alerts";
+export type TabId = "dashboard" | "target" | "runtimeconfig";
+export type TargetTab =
+    | "overview" | "timeline" | "analytics" | "profile"
+    | "insights" | "messages" | "alerts"
+    | "briefs" | "backfill" | "config";
 export type AnalyticsSubTab = "presence" | "activities" | "messages" | "voice" | "music" | "social";
 
 export interface SSEEvent {

@@ -221,12 +221,34 @@ export const s = {
     } as React.CSSProperties,
     error: {
         padding: "12px",
-        backgroundColor: "rgba(240, 71, 71, 0.1)",
+        backgroundColor: "var(--background-modifier-selected)",
         borderRadius: "6px",
-        color: "#f04747",
+        color: "var(--status-danger)",
         fontSize: "13px",
     } as React.CSSProperties,
 };
+
+// Semantic color tokens — use these everywhere instead of hardcoded hex.
+// They reference Discord's own CSS variables so they adapt to Light/Ash/Dark/Onyx.
+export const C = {
+    // Status presence
+    online:   "var(--status-positive)",
+    idle:     "var(--status-warning)",
+    dnd:      "var(--status-danger)",
+    offline:  "var(--interactive-muted)",
+
+    // Semantic feedback
+    danger:   "var(--status-danger)",
+    positive: "var(--status-positive)",
+    warning:  "var(--status-warning)",
+
+    // Brand / third-party (no Discord-native var exists, keep fixed)
+    blurple:  "#5865f2",
+    spotify:  "#1db954",
+    twitch:   "#6441a5",
+    purple:   "#9b84ec",
+    pink:     "#e91e63",
+} as const;
 
 // Event type styling
 export const EVENT_COLORS: Record<string, string> = {
@@ -304,9 +326,9 @@ export const EVENT_LABELS: Record<string, string> = {
 };
 
 export const STATUS_COLORS: Record<string, string> = {
-    online: "#43b581",
-    idle: "#faa61a",
-    dnd: "#f04747",
-    offline: "#747f8d",
-    invisible: "#747f8d",
+    online: "var(--status-positive)",
+    idle:   "var(--status-warning)",
+    dnd:    "var(--status-danger)",
+    offline:   "var(--interactive-muted)",
+    invisible: "var(--interactive-muted)",
 };

@@ -42,7 +42,7 @@ export function TargetCard({ target, status, onClick, onRemove }: TargetCardProp
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
         >
-            {/* Remove button — shown on hover */}
+            {/* Remove button - shown on hover */}
             {onRemove && hovered && (
                 <div
                     style={{
@@ -66,7 +66,7 @@ export function TargetCard({ target, status, onClick, onRemove }: TargetCardProp
                     onClick={(e: any) => { e.stopPropagation(); onRemove(); }}
                     title="Stop tracking"
                 >
-                    ×
+                    x
                 </div>
             )}
 
@@ -113,7 +113,7 @@ export function TargetCard({ target, status, onClick, onRemove }: TargetCardProp
                     <span style={{ color: "var(--text-muted)" }}>Playing </span>
                     <span style={{ color: "var(--text-normal)", fontWeight: 500 }}>{currentActivity.name}</span>
                     {currentActivity.details && (
-                        <span style={{ color: "var(--text-muted)" }}> — {currentActivity.details}</span>
+                        <span style={{ color: "var(--text-muted)" }}> - {currentActivity.details}</span>
                     )}
                 </div>
             )}

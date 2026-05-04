@@ -152,7 +152,7 @@ export function Overview({ userId, refreshTrigger = 0 }: OverviewProps) {
                             label="Playing"
                             color="#7289da"
                             title={gamingActivity.name}
-                            subtitle={[gamingActivity.details, gamingActivity.state].filter(Boolean).join(" — ")}
+                            subtitle={[gamingActivity.details, gamingActivity.state].filter(Boolean).join(" - ")}
                         />
                     )}
                     {spotifyActivity && (
@@ -180,7 +180,7 @@ export function Overview({ userId, refreshTrigger = 0 }: OverviewProps) {
                                 voiceState.streaming && "Streaming",
                                 voiceState.selfMute && "Muted",
                                 voiceState.selfDeaf && "Deafened",
-                            ].filter(Boolean).join(" · ") || undefined}
+                            ].filter(Boolean).join(", ") || undefined}
                         />
                     )}
                 </div>
@@ -202,7 +202,7 @@ export function Overview({ userId, refreshTrigger = 0 }: OverviewProps) {
                             {
                                 value: todaySummary.first_seen
                                     ? new Date(todaySummary.first_seen).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-                                    : "—",
+                                    : "-",
                                 label: "First Seen",
                                 color: "var(--text-normal)",
                             },
@@ -219,7 +219,7 @@ export function Overview({ userId, refreshTrigger = 0 }: OverviewProps) {
             {/* ── Active anomalies ── */}
             {recentAnomalies.length > 0 && (
                 <div style={{ ...s.card, borderLeft: "3px solid #f04747" }}>
-                    <div style={{ ...s.subheading, color: "#f04747" }}>⚠ Active Anomalies</div>
+                    <div style={{ ...s.subheading, color: "#f04747" }}>[!] Active Anomalies</div>
                     {recentAnomalies.map((a: any, i: number) => {
                         const severityColor = a.severity === "high" ? "#f04747" : a.severity === "medium" ? "#f47b67" : "#faa61a";
                         return (
@@ -251,10 +251,10 @@ export function Overview({ userId, refreshTrigger = 0 }: OverviewProps) {
                             let detail = "";
                             try {
                                 const d = typeof event.data === "string" ? JSON.parse(event.data) : event.data;
-                                if (d.newStatus) detail = `${d.oldStatus || "?"} → ${d.newStatus}`;
+                                if (d.newStatus) detail = `${d.oldStatus || "?"} -> ${d.newStatus}`;
                                 else if (d.name) detail = d.name;
                                 else if (d.changes) detail = Array.isArray(d.changes) ? d.changes.slice(0, 2).join(", ") : String(d.changes);
-                                else if (d.song) detail = `${d.song} — ${d.artist}`;
+                                else if (d.song) detail = `${d.song} - ${d.artist}`;
                             } catch { }
                             return (
                                 <div key={i} style={{ ...s.eventItem, borderLeftColor: color, marginBottom: "3px" }}>
